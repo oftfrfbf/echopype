@@ -2,7 +2,7 @@
 
 import pytest
 
-from echopype.testing import TEST_DATA_FOLDER
+#from echopype.testing import TEST_DATA_FOLDER
 
 import os
 import pooch
@@ -75,41 +75,36 @@ es80 = fetch_zipped_file("es80.zip")
 
 @pytest.fixture(scope="session")
 def dump_output_dir():
-    return TEST_DATA_FOLDER / "dump"
+    return Path(ad2cp).parent / "dump"
+    #return TEST_DATA_FOLDER / "dump"
 
 
 @pytest.fixture(scope="session")
 def test_path():
     return {
-        'ROOT': TEST_DATA_FOLDER,
+        #'ROOT': TEST_DATA_FOLDER, # This needs to point to parent
+        'ROOT': Path(ad2cp).parent,
 
-        # 'EA640': TEST_DATA_FOLDER / "ea640",
-        # 'EK60': TEST_DATA_FOLDER / "ek60",
-        # 'EK80': TEST_DATA_FOLDER / "ek80",
-        # 'EK80_NEW': TEST_DATA_FOLDER / "ek80_new",
-        # 'ES60': TEST_DATA_FOLDER / "es60",
-        # 'ES70': TEST_DATA_FOLDER / "es70",
-        # 'ES80': TEST_DATA_FOLDER / "es80",
-        # 'AZFP': TEST_DATA_FOLDER / "azfp",
-        # 'AZFP6': TEST_DATA_FOLDER / "azfp6",
-        # 'AD2CP': TEST_DATA_FOLDER / "ad2cp",
-        # 'EK80_CAL': TEST_DATA_FOLDER / "ek80_bb_with_calibration",
-        # 'EK80_EXT': TEST_DATA_FOLDER / "ek80_ext",
-        # 'ECS': TEST_DATA_FOLDER / "ecs",
-
+        'AD2CP': ad2cp,
+        'AZFP': azfp,
+        'AZFP6': azfp6,
         'EA640': ea640,
+        'ECS': ecs,
         'EK60': ek60,
+        'EK60_MISSING_CHANNEL_POWER': ek60_missing_channel_power,
         'EK80': ek80,
+        ### Note: EK80_CAL points to ek80_bb_with_calibration ###
+        'EK80_CAL': ek80_bb_with_calibration,
+        'EK80_BB_COMPLEX_MULTIPLEX': ek80_bb_complex_multiplex,
+        'EK80_BB_WITH_CALIBRATION': ek80_bb_with_calibration,
+        'EK80_DUPLICATE_PING_TIMES': ek80_duplicate_ping_times,
+        'EK80_EXT': ek80_ext,
+        'EK80_INVALID_ENV_DATAGRAMS': ek80_invalid_env_datagrams,
+        'EK80_MISSING_SOUND_VELOCITY_PROFILE': ek80_missing_sound_velocity_profile,
         'EK80_NEW': ek80_new,
         'ES60': es60,
         'ES70': es70,
         'ES80': es80,
-        'AZFP': azfp,
-        'AZFP6': azfp6,
-        'AD2CP': ad2cp,
-        'EK80_CAL': ek80_bb_with_calibration,
-        'EK80_EXT': ek80_ext,
-        'ECS': ecs,
     }
 
 

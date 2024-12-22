@@ -9,6 +9,11 @@ import dask.array as da
 
 
 @pytest.fixture
+def root_path(test_path):
+    return test_path['ROOT']
+
+
+@pytest.fixture
 def azfp_path(test_path):
     return test_path['AZFP']
 
@@ -269,7 +274,7 @@ def test_compute_Sv_ek80_CW_complex_BB_complex(ek80_cal_path, ek80_path):
 
 
 @pytest.mark.integration
-def test_compute_Sv_combined_ed_ping_time_extend_past_time1():
+def test_compute_Sv_combined_ed_ping_time_extend_past_time1(ek80_path):
     """
     Test computing combined Echodata object when ping time dimension in Beam group
     extends past time1 dimension in Environment group.
@@ -279,8 +284,8 @@ def test_compute_Sv_combined_ed_ping_time_extend_past_time1():
     """
     # Parse RAW files and combine Echodata objects
     raw_list = [
-        "echopype/test_data/ek80/pifsc_saildrone/SD_TPOS2023_v03-Phase0-D20230530-T001150-0.raw",
-        "echopype/test_data/ek80/pifsc_saildrone/SD_TPOS2023_v03-Phase0-D20230530-T002350-0.raw",
+        ek80_path.joinpath("pifsc_saildrone", "SD_TPOS2023_v03-Phase0-D20230530-T001150-0.raw"),
+        ek80_path.joinpath("pifsc_saildrone", "SD_TPOS2023_v03-Phase0-D20230530-T002350-0.raw"),
     ]
     ed_list = []
     for raw_file in raw_list:
@@ -333,14 +338,16 @@ def test_check_echodata_backscatter_size(
     xml_path,
     waveform_mode,
     encode_mode,
-    caplog
+    caplog,
+    root_path,
 ):
     """Tests for _check_echodata_backscatter_size warning."""
     # Parse Echodata Object
+    xml_path = root_path.joinpath(xml_path) if xml_path else None
     ed = ep.open_raw(
-        raw_file=f"echopype/test_data/{raw_path}",
+        raw_file=root_path.joinpath(raw_path),
         sonar_model=sonar_model,
-        xml_path=f"echopype/test_data/{xml_path}",
+        xml_path=xml_path
     )
 
     # Compute environment parameters if AZFP
@@ -419,10 +426,10 @@ def test_check_echodata_backscatter_size(
 
 
 @pytest.mark.integration
-def test_fm_equals_bb():
+def test_fm_equals_bb(ek80_path):
     """Check that waveform_mode='BB' and waveform_mode='FM' result in the same Sv/TS."""
     # Open Raw and Compute both Sv and both TS
-    ed = ep.open_raw("echopype/test_data/ek80/D20170912-T234910.raw", sonar_model = "EK80")
+    ed = ep.open_raw(ek80_path.joinpath("D20170912-T234910.raw"), sonar_model = "EK80")
     ds_Sv_bb = ep.calibrate.compute_Sv(ed, waveform_mode="BB", encode_mode="complex")
     ds_Sv_fm = ep.calibrate.compute_Sv(ed, waveform_mode="FM", encode_mode="complex")
     ds_TS_bb = ep.calibrate.compute_TS(ed, waveform_mode="BB", encode_mode="complex")
