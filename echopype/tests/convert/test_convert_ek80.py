@@ -10,6 +10,9 @@ from echopype.testing import TEST_DATA_FOLDER
 from echopype.convert.parse_ek80 import ParseEK80
 from echopype.convert.set_groups_ek80 import WIDE_BAND_TRANS, PULSE_COMPRESS, FILTER_IMAG, FILTER_REAL, DECIMATION
 
+@pytest.fixture
+def root_path(test_path):
+    return test_path['ROOT']
 
 @pytest.fixture
 def ek80_path(test_path):
@@ -487,20 +490,20 @@ def test_parse_mru0_mru1(ek80_path):
 
 
 @pytest.mark.unit
-def test_parse_missing_sound_velocity_profile():
+def test_parse_missing_sound_velocity_profile(root_path):
     """
     Tests that RAW files that are missing sound velocity profile values can be
     converted, saved to Zarr, and opened again.
     """
     # Open RAW
     ed = open_raw(
-        "echopype/test_data/ek80_missing_sound_velocity_profile/Hake-D20230701-T073658.raw",
+        raw_file=root_path.joinpath("ek80_missing_sound_velocity_profile/Hake-D20230701-T073658.raw"),
         sonar_model="EK80"
     )
 
     # Save RAW to Zarr
-    save_path = "echopype/test_data/ek80_missing_sound_velocity_profile/test_save.zarr"
-    ed.to_zarr(save_path,overwrite=True)
+    save_path = root_path.joinpath("ek80_missing_sound_velocity_profile/test_save.zarr")
+    ed.to_zarr(save_path, overwrite=True)
 
     # Open Converted
     ed_2 = open_converted(save_path)
@@ -514,7 +517,7 @@ def test_parse_missing_sound_velocity_profile():
 
 
 @pytest.mark.unit
-def test_parse_ek80_with_invalid_env_datagrams():
+def test_parse_ek80_with_invalid_env_datagrams(root_path):
     """
     Tests parsing EK80 RAW file with invalid environment datagrams. Checks that the EchoData object
     contains the necessary environment variables for calibration.
@@ -522,7 +525,7 @@ def test_parse_ek80_with_invalid_env_datagrams():
 
     # Parse RAW
     ed = open_raw(
-        "echopype/test_data/ek80_invalid_env_datagrams/SH24-replay-D20240705-T070536.raw",
+        raw_file=root_path.joinpath("ek80_invalid_env_datagrams/SH24-replay-D20240705-T070536.raw"),
         sonar_model="EK80",
     )
 

@@ -6,6 +6,10 @@ from echopype import open_raw
 from echopype.convert.utils.ek_raw_io import RawSimradFile, SimradEOF
 from echopype.convert.parse_base import ParseEK
 
+@pytest.fixture
+def root_path(test_path):
+    return test_path['ROOT']
+
 
 def expected_array_shape(file, datagram_type, datagram_item):
     """Extract array shape from user-specified parsed datagram type and item."""
@@ -21,19 +25,19 @@ def expected_array_shape(file, datagram_type, datagram_item):
 
 
 @pytest.mark.integration
-def test_convert_ek60_with_missing_bot_idx_file():
+def test_convert_ek60_with_missing_bot_idx_file(root_path):
     """
     Check appropriate FileNotFoundError when attempting to parse .BOT and IDX file that do
     not exist in the same folder for which the .RAW file exists."""
     with pytest.raises(FileNotFoundError):
         open_raw(
-            "echopype/test_data/ek60/ncei-wcsd/SH1701/TEST-D20170114-T202932.raw",
+            raw_file=root_path.joinpath("ek60/ncei-wcsd/SH1701/TEST-D20170114-T202932.raw"),
             sonar_model="EK60",
             include_bot=True,
         )
     with pytest.raises(FileNotFoundError):
         open_raw(
-            "echopype/test_data/ek80/ncei-wcsd/SH2106/EK80/Reduced_Hake-D20210701-T131325.raw",
+            raw_file=root_path.joinpath("ek80/ncei-wcsd/SH2106/EK80/Reduced_Hake-D20210701-T131325.raw"),
             sonar_model="EK80",
             include_idx=True,
         )
@@ -43,17 +47,18 @@ def test_convert_ek60_with_missing_bot_idx_file():
 @pytest.mark.parametrize(
     "file, sonar_model",
     [
-        ("echopype/test_data/ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
-        ("echopype/test_data/ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
-        ("echopype/test_data/ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
-        ("echopype/test_data/ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
+        ("ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
+        ("ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
+        ("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
+        ("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
     ]
 )
-def test_convert_ek_with_bot_file(file, sonar_model):
+def test_convert_ek_with_bot_file(file, sonar_model, root_path):
     """Check variable dimensions, time encodings, and attributes when BOT file is parsed."""
     # Open Raw and Parse BOT
+    file_path = root_path.joinpath(file)
     ed = open_raw(
-        file,
+        raw_file=file_path,
         sonar_model=sonar_model,
         include_bot=True,
     )
@@ -89,17 +94,17 @@ def test_convert_ek_with_bot_file(file, sonar_model):
 @pytest.mark.parametrize(
     "file, sonar_model",
     [
-        ("echopype/test_data/ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
-        ("echopype/test_data/ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
-        ("echopype/test_data/ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
-        ("echopype/test_data/ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
+        ("ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
+        ("ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
+        ("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
+        ("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
     ]
 )
-def test_convert_ek_with_idx_file(file, sonar_model):
+def test_convert_ek_with_idx_file(file, sonar_model, root_path):
     """Check variable dimensions and attributes when IDX file is parsed."""
     # Open Raw and Parse IDX
     ed = open_raw(
-        file,
+        root_path.joinpath(file),
         sonar_model=sonar_model,
         include_idx=True,
     )

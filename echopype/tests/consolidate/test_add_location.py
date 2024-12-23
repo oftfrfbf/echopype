@@ -8,6 +8,11 @@ import echopype as ep
 from echopype.consolidate.loc_utils import sel_nmea
 
 
+@pytest.fixture
+def root_path(test_path):
+    return test_path['ROOT']
+
+
 @pytest.mark.unit
 def test_sel_nmea_value_error():
     """
@@ -29,16 +34,16 @@ def test_sel_nmea_value_error():
 
 
 @pytest.mark.unit
-def test_add_location_datagram_type_specified_not_ek_error():
+def test_add_location_datagram_type_specified_not_ek_error(root_path):
     """
     Check that the appropriate ValueError is raised when datagram_type is passed in and EchoData sonar model is
     not EK.
     """
     # Compute raw and compute Sv
     ed = ep.open_raw(
-        "echopype/test_data/azfp/17082117.01A",
+        raw_file=root_path.joinpath("azfp/17082117.01A"),
         sonar_model="AZFP",
-        xml_path="echopype/test_data/azfp/23081211.XML"
+        xml_path=root_path.joinpath("azfp/23081211.XML")
     )
     avg_temperature = ed["Environment"]['temperature'].values.mean()
     env_params = {
@@ -104,7 +109,11 @@ def test_add_location(
     else:
         xml_path = None
 
-    ed = ep.open_raw(raw_path, xml_path=xml_path, sonar_model=sonar_model)
+    ed = ep.open_raw(
+        raw_file=raw_path,
+        xml_path=xml_path,
+        sonar_model=sonar_model
+    )
     if location_type == "fixed-location":
         point_ds = xr.Dataset(
             {
@@ -190,7 +199,7 @@ def test_add_location(
     ("raw_path, sonar_model, datagram_type, parse_idx, time_dim_name, compute_Sv_kwargs"),
     [
         (
-            "echopype/test_data/ek80/D20170912-T234910.raw",
+            "ek80/D20170912-T234910.raw",
             "EK80",
             None,
             False,
@@ -201,7 +210,7 @@ def test_add_location(
             }
         ),
         (
-            "echopype/test_data/ek80/RL2407_ADCP-D20240709-T150437.raw",
+            "ek80/RL2407_ADCP-D20240709-T150437.raw",
             "EK80",
             "MRU1",
             False,
@@ -212,7 +221,7 @@ def test_add_location(
             }
         ),
         (
-            "echopype/test_data/ek80/idx_bot/Hake-D20230711-T181910.raw",
+            "ek80/idx_bot/Hake-D20230711-T181910.raw",
             "EK80",
             "IDX",
             True,
@@ -225,14 +234,27 @@ def test_add_location(
     ],
 )
 def test_add_location_time_duplicates_value_error(
-    raw_path, sonar_model, datagram_type, parse_idx, time_dim_name, compute_Sv_kwargs,
+    raw_path,
+    sonar_model,
+    datagram_type,
+    parse_idx,
+    time_dim_name,
+    compute_Sv_kwargs,
+    root_path
 ):   
     """Tests for duplicate time value error in ``add_location``.""" 
     # Open raw and compute the Sv dataset
     if parse_idx:
-        ed = ep.open_raw(raw_path, include_idx=True, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            include_idx=True,
+            sonar_model=sonar_model
+        )
     else:
-        ed = ep.open_raw(raw_path, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            sonar_model=sonar_model
+        )
     ds = ep.calibrate.compute_Sv(
         echodata=ed,
         **compute_Sv_kwargs,
@@ -258,7 +280,7 @@ def test_add_location_time_duplicates_value_error(
     ("raw_path, sonar_model, datagram_type, parse_idx, compute_Sv_kwargs, error_type, expected_error_message"),
     [
         (
-            "echopype/test_data/ek80/D20170912-T234910.raw",
+            "ek80/D20170912-T234910.raw",
             "EK80",
             None,
             False,
@@ -270,7 +292,7 @@ def test_add_location_time_duplicates_value_error(
             "Coordinate variables not present.",
         ),
         (
-            "echopype/test_data/ek80/RL2407_ADCP-D20240709-T150437.raw",
+            "ek80/RL2407_ADCP-D20240709-T150437.raw",
             "EK80",
             "MRU1",
             False,
@@ -282,7 +304,7 @@ def test_add_location_time_duplicates_value_error(
             "Coordinate variables are all NaN.",
         ),
         (
-            "echopype/test_data/ek80/idx_bot/Hake-D20230711-T181910.raw",
+            "ek80/idx_bot/Hake-D20230711-T181910.raw",
             "EK80",
             "IDX",
             True,
@@ -296,14 +318,28 @@ def test_add_location_time_duplicates_value_error(
     ],
 )
 def test_add_location_lat_lon_missing_all_NaN_errors(
-    raw_path, sonar_model, datagram_type, parse_idx, compute_Sv_kwargs, error_type, expected_error_message
+    raw_path,
+    sonar_model,
+    datagram_type,
+    parse_idx,
+    compute_Sv_kwargs,
+    error_type,
+    expected_error_message,
+    root_path
 ):
     """Tests for lat lon missing or all NaN values errors."""
     # Open raw and compute the Sv dataset
     if parse_idx:
-        ed = ep.open_raw(raw_path, include_idx=True, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            include_idx=True,
+            sonar_model=sonar_model
+        )
     else:
-        ed = ep.open_raw(raw_path, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            sonar_model=sonar_model
+        )
     ds = ep.calibrate.compute_Sv(
         echodata=ed,
         **compute_Sv_kwargs,
@@ -339,7 +375,7 @@ def test_add_location_lat_lon_missing_all_NaN_errors(
     ("raw_path, sonar_model, datagram_type, parse_idx, compute_Sv_kwargs, expected_warnings"),
     [
         (
-            "echopype/test_data/ek80/D20170912-T234910.raw",
+            "ek80/D20170912-T234910.raw",
             "EK80",
             "NMEA",
             False,
@@ -361,7 +397,7 @@ def test_add_location_lat_lon_missing_all_NaN_errors(
             ]
         ),
         (
-            "echopype/test_data/ek80/RL2407_ADCP-D20240709-T150437.raw",
+            "ek80/RL2407_ADCP-D20240709-T150437.raw",
             "EK80",
             "MRU1",
             False,
@@ -383,7 +419,7 @@ def test_add_location_lat_lon_missing_all_NaN_errors(
             ]
         ),
         (
-            "echopype/test_data/ek80/idx_bot/Hake-D20230711-T181910.raw",
+            "ek80/idx_bot/Hake-D20230711-T181910.raw",
             "EK80",
             "IDX",
             True,
@@ -409,14 +445,28 @@ def test_add_location_lat_lon_missing_all_NaN_errors(
     ],
 )
 def test_add_location_lat_lon_0_NaN_warnings(
-    raw_path, sonar_model, datagram_type, parse_idx, compute_Sv_kwargs, expected_warnings, caplog
+    raw_path,
+    sonar_model,
+    datagram_type,
+    parse_idx,
+    compute_Sv_kwargs,
+    expected_warnings,
+    caplog,
+    root_path
 ):
     """Tests for lat lon 0 and NaN value warnings."""
     # Open raw and compute the Sv dataset
     if parse_idx:
-        ed = ep.open_raw(raw_path, include_idx=True, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            include_idx=True,
+            sonar_model=sonar_model
+        )
     else:
-        ed = ep.open_raw(raw_path, sonar_model=sonar_model)
+        ed = ep.open_raw(
+            raw_file=root_path.joinpath(raw_path),
+            sonar_model=sonar_model
+        )
     ds = ep.calibrate.compute_Sv(
         echodata=ed,
         **compute_Sv_kwargs,
