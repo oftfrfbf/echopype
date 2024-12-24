@@ -10,11 +10,10 @@ from pathlib import Path
 from zipfile import ZipFile
 
 
-RELEASE_ASSET_VERSION = '2024.12.21'
 ECHOPYPE_RESOURCES = pooch.create(
     path=pooch.os_cache("echopype"),
     base_url="https://github.com/oftfrfbf/echopype-test-data/releases/download/{version}/",
-    version=RELEASE_ASSET_VERSION,
+    version='2024.12.21',
     retry_if_failed=1,
     registry={
         "ad2cp.zip": "sha256:8c0e45451eca31b478e7ba9d265fc1bb5257045d30dc50fc5299d2df2abe8430",
@@ -22,7 +21,7 @@ ECHOPYPE_RESOURCES = pooch.create(
         "azfp6.zip": "sha256:b13ad0cb026d42bd0112d2999e5f63ba28226e4c79ffe335d650fe3f28db760d",
         "ea640.zip": "sha256:10bcd57c9d382e680e26a0f78b3e1c8bda8c68799d69334ab63031c10650d114",
         "ecs.zip": "sha256:e873754f40ec7142c5ece9706a9c63e6f49666b534c79aeac54952ece8267439",
-        "ek60.zip": "sha256:2334ba26f00720c1d29241d35f32c9cddce3fdd1d3dd2b1a99d8962f04e977ee",
+        #"ek60.zip": "sha256:2334ba26f00720c1d29241d35f32c9cddce3fdd1d3dd2b1a99d8962f04e977ee",
         "ek60_missing_channel_power.zip": "sha256:82a9f89c848f6925f779ef6b8d47e6fb1c59e720a303830010f73e45e82c6609",
         "ek80.zip": "sha256:e46dea3ba4531d2576bbae2cd17a33ead48cb594244dd611fddd98e53901aa39",
         "ek80_bb_complex_multiplex.zip": "sha256:4eac7b0f40bdd8405aac38e114b47cc1901f7614002e7a5ea9a642bbcb884f93",
@@ -37,6 +36,15 @@ ECHOPYPE_RESOURCES = pooch.create(
         "es80.zip": "sha256:9547583dbd6ac77375384e614cd559ff61639d36f082f1ce80855f9b57a52213",
     },
 )
+ECHOPYPE_RESOURCE2 = pooch.create(
+    path=pooch.os_cache("echopype"),
+    base_url="https://github.com/oftfrfbf/echopype-test-data/releases/download/{version}/",
+    version='2024.12.23',
+    retry_if_failed=1,
+    registry={
+        "ek60.zip": "sha256:872e8c021dc8b2fe22b8ff62659c1737e80bddee5835429d20e51a7a71dd9ef8",
+    },
+)
 
 def unpack(fname, action, pup):
     unzipped = Path(fname.split('.zip')[0]).parent # + ".unzipped"
@@ -46,8 +54,8 @@ def unpack(fname, action, pup):
             zip_file.extractall(path=unzipped)
     return unzipped
 
-def fetch_zipped_file(file_path):
-    fname = ECHOPYPE_RESOURCES.fetch(
+def fetch_zipped_file(file_path, resource=ECHOPYPE_RESOURCES):
+    fname = resource.fetch(
         fname=file_path,
         processor=unpack,
         progressbar=True,
@@ -59,7 +67,8 @@ azfp = fetch_zipped_file("azfp.zip")
 azfp6 = fetch_zipped_file("azfp6.zip")
 ea640 = fetch_zipped_file("ea640.zip")
 ecs = fetch_zipped_file("ecs.zip")
-ek60 = fetch_zipped_file("ek60.zip")
+#ek60 = fetch_zipped_file("ek60.zip")
+ek60 = fetch_zipped_file("ek60.zip", ECHOPYPE_RESOURCE2)
 ek60_missing_channel_power = fetch_zipped_file("ek60_missing_channel_power.zip")
 ek80 = fetch_zipped_file("ek80.zip")
 ek80_bb_complex_multiplex = fetch_zipped_file("ek80_bb_complex_multiplex.zip")

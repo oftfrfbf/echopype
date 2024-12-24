@@ -1287,7 +1287,7 @@ def test_apply_mask_dims_using_MVBS(range_var, use_multi_channel_mask, ek60_path
     """
     # Parse Raw File
     ed = ep.open_raw(
-        raw_file=ek60_path / "DY1801_EK60-D20180211-T164025.raw",
+        raw_file=ek60_path.joinpath("DY1801_EK60-D20180211-T164025.raw"),
         sonar_model="EK60"
     )
 
@@ -1366,7 +1366,7 @@ def test_validate_source_ds_and_check_mask_dim_alignment(ek60_path):
     """
     # Parse Raw File
     ed = ep.open_raw(
-        raw_file=ek60_path / "DY1801_EK60-D20180211-T164025.raw",
+        raw_file=ek60_path.joinpath("DY1801_EK60-D20180211-T164025.raw"),
         sonar_model="EK60"
     )
 

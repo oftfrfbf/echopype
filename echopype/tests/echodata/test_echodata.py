@@ -19,8 +19,8 @@ import numpy as np
 from utils import get_mock_echodata, check_consolidated
 
 @pytest.fixture
-def root_path(test_path):
-    return test_path["ROOT"]
+def ek60_path(test_path):
+    return test_path["EK60"]
 
 
 @pytest.fixture(scope="module")
@@ -741,10 +741,10 @@ def test_update_platform_latlon_notimestamp(test_path):
         ({"time1": 10, "time2": 10}),
     ],
 )
-def test_echodata_chunk(chunk_dict, root_path):
+def test_echodata_chunk(chunk_dict, ek60_path):
     # Parse Raw File
     ed = echopype.open_raw(
-        raw_file=root_path.joinpath("ek60/DY1801_EK60-D20180211-T164025.raw"),
+        raw_file=ek60_path.joinpath("DY1801_EK60-D20180211-T164025.raw"),
         sonar_model="EK60"
     )
 

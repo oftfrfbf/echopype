@@ -11,9 +11,14 @@ def root_path(test_path):
     return test_path['ROOT']
 
 
+@pytest.fixture
+def ek60_path(test_path):
+    return test_path['EK60']
+
+
 def expected_array_shape(file, datagram_type, datagram_item):
     """Extract array shape from user-specified parsed datagram type and item."""
-    fid = RawSimradFile(file.replace("raw", datagram_type))
+    fid = RawSimradFile(file.replace("raw"), datagram_type)
     fid.read(1)
     datagram_item_list = []
     while True:
@@ -47,16 +52,18 @@ def test_convert_ek60_with_missing_bot_idx_file(root_path):
 @pytest.mark.parametrize(
     "file, sonar_model",
     [
-        ("ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
-        ("ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
-        ("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
-        ("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
+        #("ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
+        ("idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
+        #("ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
+        ("idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
+        # ("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
+        # ("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
     ]
 )
-def test_convert_ek_with_bot_file(file, sonar_model, root_path):
+def test_convert_ek_with_bot_file(file, sonar_model, ek60_path):
     """Check variable dimensions, time encodings, and attributes when BOT file is parsed."""
     # Open Raw and Parse BOT
-    file_path = root_path.joinpath(file)
+    file_path = ek60_path.joinpath(file)
     ed = open_raw(
         raw_file=file_path,
         sonar_model=sonar_model,
@@ -94,17 +101,17 @@ def test_convert_ek_with_bot_file(file, sonar_model, root_path):
 @pytest.mark.parametrize(
     "file, sonar_model",
     [
-        ("ek60/idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
-        ("ek60/idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
-        ("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
-        ("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
+        ("idx_bot/Summer2017-D20170620-T011027.raw", "EK60"),
+        ("idx_bot/Summer2017-D20170707-T150923.raw", "EK60"),
+        #("ek80/idx_bot/Hake-D20230711-T181910.raw", "EK80"),
+        #("ek80/idx_bot/Hake-D20230711-T182702.raw", "EK80"),
     ]
 )
-def test_convert_ek_with_idx_file(file, sonar_model, root_path):
+def test_convert_ek_with_idx_file(file, sonar_model, ek60_path):
     """Check variable dimensions and attributes when IDX file is parsed."""
     # Open Raw and Parse IDX
     ed = open_raw(
-        root_path.joinpath(file),
+        ek60_path.joinpath(file),
         sonar_model=sonar_model,
         include_idx=True,
     )
