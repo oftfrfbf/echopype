@@ -72,7 +72,7 @@ def test_convert_ek_with_bot_file(file, sonar_model, ek60_path):
 
     # Check data variable shape
     seafloor_depth_da = ed["Vendor_specific"]["detected_seafloor_depth"]
-    parsed_seafloor_depth_shape = expected_array_shape(file, "bot", "depth")
+    parsed_seafloor_depth_shape = expected_array_shape(file_path, "bot", "depth")
     assert len(seafloor_depth_da["ping_time"]) == parsed_seafloor_depth_shape[0]
     assert len(seafloor_depth_da["channel"]) == parsed_seafloor_depth_shape[1]
 
